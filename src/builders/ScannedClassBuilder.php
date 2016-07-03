@@ -7,6 +7,8 @@ final class ScannedClassBuilder extends ScannedBaseBuilder {
   protected \ConstVector<ScannedGeneric> $generics = Vector { };
   private \ConstVector<ScannedTypehint> $interfaces = Vector { };
   private ?ScannedTypehint $parent = null;
+  private ?AbstractnessToken $abstractness;
+  private ?FinalityToken $finality;
 
   public function setGenericTypes(
     \ConstVector<ScannedGeneric> $generics,
@@ -37,6 +39,16 @@ final class ScannedClassBuilder extends ScannedBaseBuilder {
     \ConstVector<ScannedTypehint> $interfaces,
   ): this {
     $this->interfaces = $interfaces;
+    return $this;
+  }
+
+  public function setAbstractness(AbstractnessToken $abstractness): this {
+    $this->abstractness = $abstractness;
+    return $this;
+  }
+
+  public function setFinality(FinalityToken $finality): this {
+    $this->finality = $finality;
     return $this;
   }
 
@@ -89,6 +101,8 @@ final class ScannedClassBuilder extends ScannedBaseBuilder {
       $this->generics,
       $this->parent,
       $this->interfaces,
+      nullthrows($this->abstractness),
+      nullthrows($this->finality),
     );
   }
 

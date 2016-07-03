@@ -31,6 +31,8 @@ class ScopeConsumer extends Consumer {
     $scope_depth = 1;
     $visibility = null;
     $static = false;
+    $abstractness = null;
+    $finality = null;
     $property_type = null;
     while ($tq->haveTokens() && $scope_depth > 0) {
       list ($token, $ttype) = $tq->shift();
@@ -71,6 +73,14 @@ class ScopeConsumer extends Consumer {
 
       if ($ttype === T_STATIC) {
         $static = true;
+      }
+
+      if ($ttype === T_ABSTRACT) {
+        $abstractness = AbstractnessToken::IS_ABSTRACT;
+      }
+
+      if ($ttype === T_FINAL) {
+        $finality = FinalityToken::IS_FINAL;
       }
 
       if ($ttype === T_XHP_ATTRIBUTE) {
@@ -154,12 +164,16 @@ class ScopeConsumer extends Consumer {
           $docblock,
           $visibility,
           $static,
+          $abstractness,
+          $finality,
         );
         $attrs = Map { };
         $docblock = null;
         $visibility = null;
         $static = false;
         $property_type = null;
+        $abstractness = null;
+        $finality = null;
         continue;
       }
     }
@@ -174,6 +188,8 @@ class ScopeConsumer extends Consumer {
     ?string $docblock,
     ?VisibilityToken $visibility,
     bool $static,
+    ?AbstractnessToken $abstractness,
+    ?FinalityToken $finality,
    ): void {
     $this->consumeWhitespace();
 
@@ -186,6 +202,12 @@ class ScopeConsumer extends Consumer {
       case DefinitionType::CLASS_DEF:
       case DefinitionType::INTERFACE_DEF:
       case DefinitionType::TRAIT_DEF:
+        if ($abstractness === null) {
+          $abstractness = AbstractnessToken::NOT_ABSTRACT;
+        }
+        if ($finality === null) {
+          $finality = FinalityToken::NOT_FINAL;
+        }
         $builder->addClass(
           (new ClassConsumer(
             ClassDefinitionType::assert($def_type),
@@ -195,6 +217,8 @@ class ScopeConsumer extends Consumer {
             ->getBuilder()
             ->setAttributes($attrs)
             ->setDocComment($docblock)
+            ->setAbstractness($abstractness)
+            ->setFinality($finality)
         );
         return;
       case DefinitionType::FUNCTION_DEF:
@@ -214,7 +238,9 @@ class ScopeConsumer extends Consumer {
           ->setAttributes($attrs)
           ->setDocComment($docblock);
          if ($fb instanceof ScannedFunctionBuilder) {
-           $builder->addFunction($fb);
+           $builder->addFunction(
+             $fb
+           );
          } else {
           invariant(
             $fb instanceof ScannedMethodBuilder,
@@ -224,10 +250,18 @@ class ScopeConsumer extends Consumer {
           if ($visibility === null) {
             $visibility = VisibilityToken::T_PUBLIC;
           }
+          if ($abstractness === null) {
+            $abstractness = AbstractnessToken::NOT_ABSTRACT;
+          }
+          if ($finality === null) {
+            $finality = FinalityToken::NOT_FINAL;
+          }
           $builder->addMethod(
             $fb
             ->setVisibility($visibility)
             ->setStatic($static)
+            ->setAbstractness($abstractness)
+            ->setFinality($finality)
           );
         }
         return;

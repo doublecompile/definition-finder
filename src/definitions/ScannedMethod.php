@@ -15,6 +15,8 @@ final class ScannedMethod
     \ConstVector<ScannedParameter> $parameters,
     private VisibilityToken $visibility,
     private bool $static,
+    private AbstractnessToken $abstractness = AbstractnessToken::NOT_ABSTRACT,
+    private FinalityToken $finality = FinalityToken::NOT_FINAL,
   ) {
     parent::__construct(
       $position,
@@ -41,5 +43,13 @@ final class ScannedMethod
 
   public function isStatic(): bool {
     return $this->static;
+  }
+
+  public function isAbstract(): bool {
+    return $this->abstractness === AbstractnessToken::IS_ABSTRACT;
+  }
+
+  public function isFinal(): bool {
+    return $this->finality === FinalityToken::IS_FINAL;
   }
 }
