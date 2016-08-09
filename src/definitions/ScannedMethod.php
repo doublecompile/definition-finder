@@ -14,7 +14,7 @@ final class ScannedMethod
     ?ScannedTypehint $returnType,
     \ConstVector<ScannedParameter> $parameters,
     private VisibilityToken $visibility,
-    private bool $static,
+    private StaticityToken $staticity = StaticityToken::NOT_STATIC,
     private AbstractnessToken $abstractness = AbstractnessToken::NOT_ABSTRACT,
     private FinalityToken $finality = FinalityToken::NOT_FINAL,
   ) {
@@ -42,7 +42,7 @@ final class ScannedMethod
   }
 
   public function isStatic(): bool {
-    return $this->static;
+    return $this->staticity === StaticityToken::IS_STATIC;
   }
 
   public function isAbstract(): bool {

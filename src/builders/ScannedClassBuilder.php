@@ -82,7 +82,7 @@ final class ScannedClassBuilder extends ScannedBaseBuilder {
               $param->getDocComment(),
               $param->getTypehint(),
               $param->__getVisibility(),
-              /* is static = */ false,
+              StaticityToken::NOT_STATIC,
             );
           }
         }

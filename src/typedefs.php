@@ -29,6 +29,11 @@ enum RelationshipToken: string {
   SUPERTYPE = 'super';
 }
 
+enum StaticityToken: string {
+  IS_STATIC = 'static';
+  NOT_STATIC = '';
+}
+
 enum AbstractnessToken: string {
   IS_ABSTRACT = 'abstract';
   NOT_ABSTRACT = '';
