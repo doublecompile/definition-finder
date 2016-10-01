@@ -74,6 +74,10 @@ abstract class ScannedClass
     return $this->interfaces;
   }
 
+  public function getTraitInfo(): \ConstVector<ScannedTypehint> {
+    return $this->traits;
+  }
+
   public function isAbstract(): bool {
     return $this->abstractness === AbstractnessToken::IS_ABSTRACT;
   }

@@ -131,4 +131,18 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase {
       $def->getTraitNames(),
     );
   }
+
+  public function testUsesGenericTrait(): void {
+    $data = '<?hh class Foo { use Herp<string>; }';
+    $def = FileParser::FromData($data)->getClass('Foo');
+    $traits = $def->getTraitInfo();
+    $this->assertCount(1, $traits);
+    $trait = $traits->firstValue();
+    $this->assertNotNull($trait);
+    $this->assertEquals( 'Herp', $trait?->getTypeName() );
+    $this->assertEquals(
+      Vector { 'string' },
+      $trait?->getGenericTypes()?->map($a ==> $a->getTypeText()),
+    );
+  }
 }
